@@ -23,4 +23,4 @@ jobs:
       #  run: go test -v ./...
 
       - name: Build
-        run: go build -v ./cmd/service/main.go
+        run: go build -v ./cmd/app/main.go
