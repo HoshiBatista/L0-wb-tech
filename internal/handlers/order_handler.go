@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"l0-wb-tech/internal/cache"
 	"log/slog"
 	"net/http"
 	"strings"
+
+	"l0-wb-tech/internal/cache"
 )
 
 type Handler struct {
@@ -15,7 +16,7 @@ type Handler struct {
 
 func New(c *cache.Cache, log *slog.Logger) *Handler {
 	return &Handler{
-		cache: c,
+		cache:  c,
 		logger: log,
 	}
 }
@@ -25,6 +26,7 @@ func (h *Handler) GetOrderByUID(w http.ResponseWriter, r *http.Request) {
 
 	if orderUID == "" {
 		http.Error(w, "Order UID is required", http.StatusBadRequest)
+		return
 	}
 
 	order, is_found := h.cache.Get(orderUID)
@@ -37,6 +39,7 @@ func (h *Handler) GetOrderByUID(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
+	//nolint:musttag
 	if err := json.NewEncoder(w).Encode(order); err != nil {
 		h.logger.Error("Ошибка при кодировании JSON-ответа", slog.Any("error", err))
 		http.Error(w, "Internal server error", http.StatusInternalServerError)

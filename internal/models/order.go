@@ -6,9 +6,9 @@ type Order struct {
 	OrderUID          string    `json:"order_uid"          gorm:"primaryKey"`
 	TrackNumber       string    `json:"track_number"       gorm:"not null;unique"`
 	Entry             string    `json:"entry"`
-	Delivery          Delivery  `json:"delivery"           gorm:"foreignKey:OrderUID;constraint:OnDelete:CASCADE;"`
-	Payment           Payment   `json:"payment"            gorm:"foreignKey:OrderUID;constraint:OnDelete:CASCADE;"`
-	Items             []Item    `json:"items"              gorm:"foreignKey:OrderUID;constraint:OnDelete:CASCADE;"`
+	Delivery          Delivery  `json:"delivery"           gorm:"foreignKey:OrderUID;constraint:OnDelete:CASCADE;" musttag:"true"`
+	Payment           Payment   `json:"payment"            gorm:"foreignKey:OrderUID;constraint:OnDelete:CASCADE;" musttag:"true"`
+	Items             []Item    `json:"items"              gorm:"foreignKey:OrderUID;constraint:OnDelete:CASCADE;" musttag:"true"`
 	Locale            string    `json:"locale"`
 	InternalSignature string    `json:"internal_signature"`
 	CustomerID        string    `json:"customer_id"`
@@ -45,7 +45,7 @@ type Payment struct {
 }
 
 type Item struct {
-	ID          uint    `gorm:"primaryKey;autoIncrement"`
+	ID          uint    `gorm:"primaryKey;autoIncrement" json:"-"`
 	OrderUID    string  `gorm:"index;not null"           json:"-"`
 	ChrtID      int     `gorm:"not null"                 json:"chrt_id"`
 	TrackNumber string  `                                json:"track_number"`
