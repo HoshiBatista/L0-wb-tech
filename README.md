@@ -1,7 +1,7 @@
 # L0-wb-tech
 # L0-wb-tech — Демонстрационный сервис заказов
 
-[![CI Status](https://github.com/crissyro/L0-wb-tech/actions/workflows/go.yml/badge.svg)](https://github.com/crissyro/L0-wb-tech/actions/workflows/go.yml)
+[![CI Status](https://github.com/HoshiBatista/L0-wb-tech/actions/workflows/go.yml/badge.svg)](https://github.com/crissyro/L0-wb-tech/actions/workflows/go.yml)
 [![Go Version](https://img.shields.io/badge/Go-1.24-blue.svg)](https://go.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
