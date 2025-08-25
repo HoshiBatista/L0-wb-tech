@@ -61,3 +61,19 @@ func (s *Storage) GetAllOrders(ctx context.Context) ([]models.Order, error) {
 
 	return orders, nil
 }
+
+func (s *Storage) GetOrderByUID(ctx context.Context, orderUID string) (models.Order, error) {
+	var order models.Order
+
+	result := s.db.WithContext(ctx).
+		Preload("Delivery").
+		Preload("Payment").
+		Preload("Items").
+		First(&order, "order_uid = ?", orderUID)
+	
+	if result.Error != nil {
+		return models.Order{}, result.Error 
+	}
+	
+	return order, nil
+}
