@@ -70,10 +70,10 @@ func (s *Storage) GetOrderByUID(ctx context.Context, orderUID string) (models.Or
 		Preload("Payment").
 		Preload("Items").
 		First(&order, "order_uid = ?", orderUID)
-	
+
 	if result.Error != nil {
-		return models.Order{}, result.Error 
+		return models.Order{}, result.Error
 	}
-	
+
 	return order, nil
 }

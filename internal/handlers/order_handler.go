@@ -1,13 +1,14 @@
-package handler
+package handlers
 
 import (
 	"encoding/json"
 	"errors"
-	"l0-wb-tech/internal/cache"
-	"l0-wb-tech/internal/database"
 	"log/slog"
 	"net/http"
 	"strings"
+
+	"l0-wb-tech/internal/cache"
+	"l0-wb-tech/internal/database"
 
 	"gorm.io/gorm"
 )
@@ -49,7 +50,7 @@ func (h *Handler) GetOrderByUID(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			h.logger.Warn("Заказ не найден ни в кэше, ни в БД", slog.String("order_uid", orderUID))
 			http.NotFound(w, r)
-		} else { 
+		} else {
 			h.logger.Error("Ошибка при поиске заказа в БД", slog.Any("error", err))
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 		}
@@ -66,7 +67,7 @@ func (h *Handler) GetOrderByUID(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) respondWithJSON(w http.ResponseWriter, status int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
-	
+
 	if err := json.NewEncoder(w).Encode(payload); err != nil {
 		h.logger.Error("Ошибка при кодировании JSON-ответа", slog.Any("error", err))
 	}
