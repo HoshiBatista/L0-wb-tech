@@ -1,22 +1,27 @@
-package handlers
+package handler
 
 import (
 	"encoding/json"
+	"errors"
+	"l0-wb-tech/internal/cache"
+	"l0-wb-tech/internal/database"
 	"log/slog"
 	"net/http"
 	"strings"
 
-	"l0-wb-tech/internal/cache"
+	"gorm.io/gorm"
 )
 
 type Handler struct {
 	cache  *cache.Cache
+	db     *database.Storage
 	logger *slog.Logger
 }
 
-func New(c *cache.Cache, log *slog.Logger) *Handler {
+func New(c *cache.Cache, db *database.Storage, log *slog.Logger) *Handler {
 	return &Handler{
 		cache:  c,
+		db:     db,
 		logger: log,
 	}
 }
@@ -29,22 +34,40 @@ func (h *Handler) GetOrderByUID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	order, is_found := h.cache.Get(orderUID)
+	order, found := h.cache.Get(orderUID)
 
-	if !is_found {
-		h.logger.Warn("Заказ не найден в кэше", slog.String("order_uid", orderUID))
-		http.NotFound(w, r)
+	if found {
+		h.logger.Info("Заказ успешно отдан из кэша", slog.String("order_uid", orderUID))
+		h.respondWithJSON(w, http.StatusOK, order)
 		return
 	}
 
+	h.logger.Warn("Промах кэша, ищем заказ в БД", slog.String("order_uid", orderUID))
+	orderFromDB, err := h.db.GetOrderByUID(r.Context(), orderUID)
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			h.logger.Warn("Заказ не найден ни в кэше, ни в БД", slog.String("order_uid", orderUID))
+			http.NotFound(w, r)
+		} else { 
+			h.logger.Error("Ошибка при поиске заказа в БД", slog.Any("error", err))
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+		}
+
+		return
+	}
+
+	h.logger.Info("Заказ найден в БД, кэш обновлен", slog.String("order_uid", orderUID))
+	h.cache.Set(orderFromDB)
+
+	h.respondWithJSON(w, http.StatusOK, orderFromDB)
+}
+
+func (h *Handler) respondWithJSON(w http.ResponseWriter, status int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-
-	//nolint:musttag
-	if err := json.NewEncoder(w).Encode(order); err != nil {
+	w.WriteHeader(status)
+	
+	if err := json.NewEncoder(w).Encode(payload); err != nil {
 		h.logger.Error("Ошибка при кодировании JSON-ответа", slog.Any("error", err))
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
 	}
-
-	h.logger.Info("Заказ успешно отдан из кэша", slog.String("order_uid", orderUID))
 }
