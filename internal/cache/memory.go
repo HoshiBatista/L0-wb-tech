@@ -32,3 +32,9 @@ func (c *Cache) Load(orders []models.Order) {
 		c.storage[order.OrderUID] = order
 	}
 }
+
+func (c *Cache) Set(order models.Order) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.storage[order.OrderUID] = order
+}
