@@ -4,6 +4,12 @@
 [![CI Status](https://github.com/HoshiBatista/L0-wb-tech/actions/workflows/ci.yml/badge.svg)](https://github.com/HoshiBatista/L0-wb-tech/actions/workflows/ci.yml)
 [![Go Version](https://img.shields.io/badge/Go-1.24-blue.svg)](https://go.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Go Report Card](https://goreportcard.com/badge/github.com/HoshiBatista/L0-wb-tech)](https://goreportcard.com/report/github.com/HoshiBatista/L0-wb-tech)
+[![codecov](https://codecov.io/gh/HoshiBatista/L0-wb-tech/branch/main/graph/badge.svg)](https://codecov.io/gh/HoshiBatista/L0-wb-tech)
+[![GitHub last commit](https://img.shields.io/github/last-commit/HoshiBatista/L0-wb-tech.svg)](https://github.com/HoshiBatista/L0-wb-tech/commits/main)
+<br>
+[![GitHub stars](https://img.shields.io/github/stars/HoshiBatista/L0-wb-tech?style=social)](https://github.com/HoshiBatista/L0-wb-tech/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/HoshiBatista/L0-wb-tech?style=social)](https://github.com/HoshiBatista/L0-wb-tech/network/members)
 
 Тестовый проект, разработанный в рамках обучения в WB Tech School. Это небольшой микросервис на Go, который получает данные о заказах из очереди сообщений, сохраняет их в базу данных и предоставляет доступ к ним через кэш и HTTP API.
 
