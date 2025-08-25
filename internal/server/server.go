@@ -15,7 +15,12 @@ type Server struct {
 
 func New(port string, handler *handlers.Handler, logger *slog.Logger) *Server {
 	mux := http.NewServeMux()
+
 	mux.HandleFunc("/order/", handler.GetOrderByUID)
+
+	fileServer := http.FileServer(http.Dir("./web"))
+
+	mux.Handle("/", fileServer)
 
 	return &Server{
 		httpServer: &http.Server{
