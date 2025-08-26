@@ -20,7 +20,7 @@ type Order struct {
 }
 
 type Delivery struct {
-	OrderUID string `gorm:"primaryKey"`
+	OrderUID string `gorm:"primaryKey" json:"-"`
 	Name     string `                  json:"name"`
 	Phone    string `                  json:"phone"`
 	Zip      string `                  json:"zip"`
@@ -31,7 +31,7 @@ type Delivery struct {
 }
 
 type Payment struct {
-	OrderUID     string  `gorm:"primaryKey"`
+	OrderUID     string  `gorm:"primaryKey"      json:"-"`
 	Transaction  string  `gorm:"unique;not null" json:"transaction"`
 	RequestID    string  `                       json:"request_id"`
 	Currency     string  `                       json:"currency"`

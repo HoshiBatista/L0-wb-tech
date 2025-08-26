@@ -4,51 +4,47 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
+	"time"
 
 	"github.com/segmentio/kafka-go"
 )
 
 func main() {
-	byteValue, err := ioutil.ReadFile("../model.json")
+	content, err := os.ReadFile("model.json")
 
 	if err != nil {
-		log.Fatalf("Ошибка чтения test_order.json: %v", err)
+		log.Fatal("Ошибка чтения файла:", err)
 	}
 
-	var data map[string]interface{}
+	var order map[string]interface{}
 
-	if err := json.Unmarshal(byteValue, &data); err != nil {
-		log.Fatalf("Ошибка парсинга JSON: %v", err)
+	if err := json.Unmarshal(content, &order); err != nil {
+		log.Fatal("Ошибка парсинга JSON:", err)
 	}
 
-	orderUID, ok := data["order_uid"].(string)
+	const num = 10
 
-	if !ok || orderUID == "" {
-		log.Fatal("Ключ 'order_uid' не найден или пуст в test_order.json")
+	w := &kafka.Writer{
+		Addr:         kafka.TCP("localhost:9092"),
+		Topic:        "orders",
+		BatchTimeout: time.Duration(num) * time.Millisecond,
 	}
 
-	writer := kafka.NewWriter(kafka.WriterConfig{
-		Brokers:  []string{"localhost:9092"},
-		Topic:    "orders",
-		Balancer: &kafka.LeastBytes{},
-	})
-
-	defer writer.Close()
-
-	fmt.Printf("Отправляем заказ с UID: %s\n", orderUID)
-
-	err = writer.WriteMessages(context.Background(),
+	err = w.WriteMessages(context.Background(),
 		kafka.Message{
-			Key:   []byte(orderUID), 
-			Value: byteValue,
+			Value: content,
 		},
 	)
 
 	if err != nil {
-		log.Fatalf("Ошибка отправки сообщения в Kafka: %v", err)
+		log.Fatal("Ошибка отправки сообщения:", err)
 	}
 
-	fmt.Println("Сообщение успешно отправлено!")
+	fmt.Println("Сообщение отправлено в Kafka")
+
+	if err := w.Close(); err != nil {
+		log.Fatal("Ошибка при закрытии writer:", err)
+	}
 }

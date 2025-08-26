@@ -21,7 +21,7 @@ import (
 const (
 	shutdownTimeout = time.Duration(5) * time.Second
 	httpPort        = "8081"
-	dbConnStr       = "postgres://myuser:mypassword@localhost:5432/orders_db?sslmode=disable"
+	dbConnStr       = "postgres://admin:admin@localhost:5432/l0_database?sslmode=disable"
 	kafkaTopic      = "orders"
 )
 
