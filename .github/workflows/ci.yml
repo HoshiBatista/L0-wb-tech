@@ -37,17 +37,6 @@ jobs:
           go-version: '1.24' 
           cache: true
 
-      - name: Wait for Kafka to be ready
-        run: |
-          for i in {1..30}; do
-            if kafkacat -b localhost:9092 -L; then
-              echo "Kafka is ready!"
-              break
-            fi
-            echo "Waiting for Kafka..."
-            sleep 2
-          done
-
       - name: Build
         run: go build -v ./cmd/app/main.go
 
