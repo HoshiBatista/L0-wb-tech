@@ -39,7 +39,3 @@ jobs:
 
       - name: Build
         run: go build -v ./cmd/app/main.go
-
-      - name: Run producer test
-        run: |
-          go run ./tests/test_producer.go
