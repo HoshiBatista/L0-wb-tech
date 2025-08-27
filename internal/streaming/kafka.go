@@ -60,7 +60,6 @@ func (c *Consumer) Run(ctx context.Context) {
 	}()
 
 	var jsonBuffer strings.Builder
-
 	for {
 		msg, err := c.reader.ReadMessage(ctx)
 		if err != nil {
@@ -89,7 +88,6 @@ func (c *Consumer) Run(ctx context.Context) {
 				c.logger.Debug("Накопление JSON, сообщение еще не полное")
 				continue
 			}
-
 			c.logger.Error("Ошибка парсинга JSON сообщения",
 				"error", err,
 				"message", bufferContent)
