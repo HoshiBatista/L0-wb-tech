@@ -9,6 +9,24 @@ on:
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
+    services:
+      zookeeper:
+        image: confluentinc/cp-zookeeper:7.6.0
+        ports:
+          - "2181:2181"
+        env:
+          ZOOKEEPER_CLIENT_PORT: 2181
+          
+      kafka:
+        image: confluentinc/cp-kafka:7.6.0
+        ports:
+          - "9092:9092"
+        env:
+          KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+          KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,8 +37,31 @@ jobs:
           go-version: '1.24' 
           cache: true
 
-      #- name: Run tests
-      #  run: go test -v ./...
+      - name: Install Kafka tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y kafkacat
+
+      - name: Wait for Kafka to be ready
+        run: |
+          for i in {1..30}; do
+            if kafkacat -b localhost:9092 -L; then
+              echo "Kafka is ready!"
+              break
+            fi
+            echo "Waiting for Kafka..."
+            sleep 2
+          done
+
+      - name: Run tests
+        run: go test -v ./...
 
       - name: Build
         run: go build -v ./cmd/app/main.go
+
+      - name: Run producer test
+        run: |
+          cd scripts/test_producer
+          go mod init test_producer
+          go mod tidy
+          go run main.go
